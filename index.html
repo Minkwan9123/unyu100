@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>1.00초 맞추기 게임</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #ffe4f2, #ffffff);
+      font-family: 'Nanum Gothic', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    h2 {
+      color: #ff5aa7;
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      margin: 10px 0 30px;
+    }
+
+    #timer {
+      font-size: 6rem;
+      color: #e91e63;
+      margin: 20px 0;
+    }
+
+    #message {
+      font-size: 1.6rem;
+      margin-bottom: 30px;
+    }
+
+    button {
+      font-size: 1.2rem;
+      padding: 12px 24px;
+      background: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+    }
+
+    button:hover {
+      background: #e91e63;
+    }
+  </style>
+</head>
+<body tabindex="0">
+  <h2>🎉 운유고등학교 100일 기념 🎉</h2>
+  <h1>1.00초 맞추기 게임</h1>
+  <div id="timer">0.00</div>
+  <div id="message">스페이스바를 눌러 시작해요</div>
+  <button id="resetBtn">다시 하기</button>
+
+  <script>
+    let isRunning = false;
+    let startTime = 0;
+    let interval = null;
+
+    const timerEl = document.getElementById("timer");
+    const msgEl = document.getElementById("message");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function format(ms) {
+      return (ms / 1000).toFixed(2);
+    }
+
+    function update() {
+      const now = Date.now();
+      timerEl.textContent = format(now - startTime);
+    }
+
+    function start() {
+      startTime = Date.now();
+      interval = setInterval(update, 10);
+      msgEl.textContent = "스페이스바를 다시 눌러 멈추세요!";
+      resetBtn.style.display = "none";
+    }
+
+    function stop() {
+      clearInterval(interval);
+      const elapsed = Date.now() - startTime;
+      const formatted = format(elapsed);
+      timerEl.textContent = formatted;
+
+      msgEl.textContent = (formatted === "1.00")
+        ? `🎯 성공! ${formatted}초`
+        : `😢 아쉬워요! ${formatted}초`;
+
+      resetBtn.style.display = "inline-block";
+    }
+
+    function reset() {
+      isRunning = false;
+      timerEl.textContent = "0.00";
+      msgEl.textContent = "스페이스바를 눌러 시작해요";
+      resetBtn.style.display = "none";
+    }
+
+    document.body.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault(); // 스크롤 방지
+        if (!isRunning) {
+          isRunning = true;
+          start();
+        } else {
+          isRunning = false;
+          stop();
+        }
+      }
+    });
+
+    // Mac 크롬 대응 - 로딩 시 포커스 주기
+    window.addEventListener("load", () => {
+      document.body.focus();
+    });
+
+    resetBtn.addEventListener("click", reset);
+  </script>
+</body>
+</html>
+
